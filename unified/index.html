@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrated Guitar Practice Tool</title>
+    <div class="control-panel">
+        <div class="selection-controls">
+            <div class="control-group">
+                <label for="progressionSelect">Progression:</label>
+                <select id="progressionSelect">
+                    <option value="II-V-I">II-V-I in Major</option>
+                    <option value="Blues">Blues</option>
+                    <option value="Minor-II-V-I">Minor II-V-I</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="keySelect">Key:</label>
+                <select id="keySelect">
+                    <option value="C">C</option>
+                    <option value="C#">C#/Db</option>
+                    <option value="D">D</option>
+                    <option value="D#">Eb</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                    <option value="F#">F#/Gb</option>
+                    <option value="G">G</option>
+                    <option value="G#">Ab</option>
+                    <option value="A">A</option>
+                    <option value="A#">Bb</option>
+                    <option value="B">B</option>
+                </select>
+            </div>
+        </div>
+        
+        <button id="practiceButton">Start Practice</button>
+        <div id="droneStatus">Drone: Not Playing</div>
+    </div>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+            background-color: #f0f0f0;
+        }
+        .control-panel, .display-panel {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #practiceButton {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            min-width: 150px; /* Prevent size change */
+        }
+        #practiceButton.stop {
+             background-color: #f44336;
+        }
+        #pitchOutput {
+            margin-top: 15px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            min-width: 280px;
+            min-height: 90px; /* Ensure space */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center; /* Center text */
+        }
+        #droneStatus {
+            margin-top: 10px;
+            font-style: italic;
+            color: #555;
+        }
+        .note { font-weight: bold; font-size: 1.8em; color: #333; }
+        .frequency { font-size: 0.8em; color: #666; }
+        .clarity { font-size: 0.7em; color: #999; }
+        .error { color: red; font-weight: bold; }
+
+        .selection-controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.control-group label {
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+select {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: white;
+    min-width: 150px;
+}
+    </style>
+</head>
+    <!-- Load script as a module -->
+    <script src="script.js" type="module"></script>
+</body>
+</html>
