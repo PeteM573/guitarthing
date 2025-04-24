@@ -32,12 +32,27 @@
         <button id="stopButton">Stop</button>
     </div>
 
-     <!-- Progression Selection - ADDED -->
+    <!-- Key Selection - ADDED -->
     <div class="control-group">
-    <label for="progressionSelect">Progression:</label>
-    <select id="progressionSelect">
-        <!-- Options will be populated by JavaScript -->
-    </select>
+        <label for="keyRootSelect">Key Root:</label>
+        <select id="keyRootSelect">
+            <!-- Options will be populated by JavaScript -->
+        </select>
+        <label for="keyQualitySelect" style="margin-left: 15px;">Quality:</label>
+        <select id="keyQualitySelect">
+            <option value="Major">Major</option>
+            <option value="Minor">Minor</option>
+            <!-- Add other qualities later if needed -->
+        </select>
+    </div>
+    <!-- End Key Selection -->
+
+     <!-- Progression Selection -->
+    <div class="control-group">
+        <label for="progressionSelect">Progression:</label>
+        <select id="progressionSelect">
+            <!-- Options will be populated by JavaScript based on Key Quality -->
+        </select>
     </div>
     <!-- End Progression Selection -->
 
@@ -50,7 +65,7 @@
     <!-- End Tempo Control -->
 
     <div id="output">
-        Set tempo, then click "Start" to begin.
+        Select key, progression, tempo, then click "Start".
     </div>
 
     <!-- Link to our combined script AS A MODULE -->

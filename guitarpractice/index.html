@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Guitar Improv Helper</title>
+    <script src="https://unpkg.com/tone@14.7.77/build/Tone.js"></script>
+    <link rel="stylesheet" href="style.css"> <!-- Link to external CSS -->
+</head>
+<body>
+    <h1>Guitar Improv Helper</h1>
+
+    <!-- Phase 1: Selection -->
+    <div id="selectionPhase">
+        <h2>1. Select Key</h2>
+        <!-- Circle of Fifths will go here -->
+        <div id="circleContainer">
+             <svg id="circleOfFifths" width="300" height="300" viewBox="0 0 100 100">
+                <!-- SVG content will be added by JS -->
+             </svg>
+        </div>
+
+      
+
+        <h2>2. Select Progression</h2>
+        <div class="control-group">
+            <label for="progressionSelect">Progression:</label>
+            <select id="progressionSelect">
+                <!-- Options populated by JS -->
+            </select>
+        </div>
+
+        <h2>3. Set Tempo & Start</h2>
+        <div class="tempo-control control-group">
+            <label for="tempoSlider">Tempo:</label>
+            <input type="range" id="tempoSlider" min="60" max="240" value="120" step="1">
+            <span id="tempoValue">120</span> BPM
+        </div>
+
+        <div>
+            <button id="startButton">Start Practice</button>
+        </div>
+    </div>
+
+    <!-- Phase 2: Lesson / Practice -->
+    <div id="lessonPhase" class="hidden"> <!-- Initially hidden -->
+         <h2>Practice Session</h2>
+         <p>Playing: <span id="lessonInfo">...</span></p>
+
+         <!-- Waveform Display Area -->
+         <div id="waveformContainer">
+             <canvas id="waveformCanvas" width="600" height="100"></canvas>
+         </div>
+
+         <!-- Pitch Output Area -->
+         <div id="pitchOutput">
+             Pitch Info Will Appear Here
+         </div>
+
+         <div class="control-group">
+             <button id="stopButton">Stop Practice</button>
+         </div>
+    </div>
+
+    <script src="script.js" type="module"></script>
+</body>
+</html>
