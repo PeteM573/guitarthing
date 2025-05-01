@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "module": "esnext",
+      "moduleResolution": "node",
+      "target": "es5",
+      "jsx": "react",
+      "baseUrl": "./src",
+      "paths": {
+        "*": ["./*"]
+      }
+    },
+    "exclude": ["node_modules"]
+  }

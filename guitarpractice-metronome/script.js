@@ -21,11 +21,6 @@ const metronomeToggleButton = document.getElementById('metronomeToggle'); // Add
 //const visualPulseElement = document.getElementById('visualPulse');       // Added
 //console.log("Initial check - visualPulseElement:", visualPulseElement);
 const MIN_DETECTION_FREQUENCY = 73.42
-const fretViewFixedRadio = document.getElementById('fretViewFixed');
-const fretViewSlidingRadio = document.getElementById('fretViewSliding');
-const fretViewRandomRadio = document.getElementById('fretViewRandom');
-const slidingStartFretControlDiv = document.getElementById('slidingStartFretControl');
-const startFretInput = document.getElementById('startFretInput');
 
 let lastValidPitchHTML = ''; // Store the last good HTML content (note, freq, clarity)
 let lastValidKeyStatusClass = ''; // Store the class ('key-status-in' or 'key-status-out')
@@ -65,19 +60,6 @@ const NOTE_TO_MIDI_BASE = { // MIDI numbers for octave 0
 const MIDI_TO_NOTE_SHARP = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const MIDI_TO_NOTE_FLAT = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
-// --- Fretboard Constants ---
-const STANDARD_TUNING_MIDI = [40, 45, 50, 55, 59, 64]; // E2, A2, D3, G3, B3, E4
-const NUM_STRINGS = 6;
-// const NUM_FRETS_TO_SHOW = 7; // We'll calculate this dynamically now
-const FIXED_VIEW_FRETS = 12; // For the 0-11 view
-const SLIDING_WINDOW_FRETS = 5; // How many frets for sliding/random view
-const MAX_START_FRET_SLIDING = 19; // Allows window up to fret 23 (19+5-1)
-const MAX_START_FRET_RANDOM = 16; // Allows window up to fret 20 (16+5-1)
-// let currentStartFret = 0; // Replaced by dynamic calculation
-const FRETBOARD_SVG_ID = 'fretboardSVG';
-const FRETBOARD_INFO_ID = 'fretboardInfo';
-// --- End Fretboard Constants ---
-
 // Base Progressions Data (Make sure this is also at the top level)
 // ... (Keep baseProgressionsData as it is) ...
 const baseProgressionsData = {
@@ -99,8 +81,6 @@ let isRunning = false; // Add this with other top-level variables
 let currentKeyRoot = 'C'; // Default Key Root
 let currentKeyQuality = 'Major'; // Default Key Quality
 let currentProgressionId = null; // Initialize, will be set during init
-let fretboardViewMode = 'sliding'; // Default: 'fixed', 'sliding', 'random'
-let userStartFret = 0; // User-defined start for sliding mode
 let audioContext = null;
 let analyserNode = null;
 let detector = null;
@@ -206,45 +186,7 @@ function transposeProgression(baseChords, interval) {
     return transposedChords;
 }
 
-/**
- * Handles changes to the Fretboard View Mode radio buttons.
- */
-function handleFretViewChange(event) {
-    if (!event.target.checked) return; // Only act if the target is being checked
 
-    fretboardViewMode = event.target.value; // 'fixed', 'sliding', or 'random'
-    console.log(`Fretboard view mode changed to: ${fretboardViewMode}`);
-
-    // Show/hide and enable/disable the start fret input based on mode
-    if (fretboardViewMode === 'sliding') {
-        slidingStartFretControlDiv.classList.remove('hidden');
-        startFretInput.disabled = false;
-        // Optional: Focus the input when switching to sliding mode
-        // startFretInput.focus();
-    } else {
-        slidingStartFretControlDiv.classList.add('hidden');
-        startFretInput.disabled = true;
-    }
-}
-
-/**
- * Handles changes to the Start Fret number input.
- */
-function handleStartFretChange(event) {
-    let value = parseInt(event.target.value, 10);
-
-    // Basic validation
-    if (isNaN(value)) {
-        value = 0; // Default to 0 if input is not a number
-    }
-    value = Math.max(0, Math.min(value, MAX_START_FRET_SLIDING)); // Clamp between 0 and max
-
-    // Update the input field value in case it was invalid or clamped
-    event.target.value = value;
-
-    userStartFret = value; // Update the state variable
-    console.log(`User start fret changed to: ${userStartFret}`);
-}
 // === GET SCALE NOTES FUNCTION ===
 // ... (Keep getScaleNotes function as it is) ...
 /**
@@ -430,6 +372,7 @@ function handleUnclearInput(currentTime) {
 
 
 // === WAVEFORM DRAWING FUNCTION ===
+// ... (Keep drawSpectrum and drawNoteLabels functions as they are) ...
 function drawSpectrum() {
     // Add these checks at the start
     if (!frequencyAnalyser || !frequencyDataArray || !waveformCtx || !isRunning) {
@@ -514,171 +457,6 @@ function drawNoteLabels() {
     });
 }
 
-/**
- * Draws the guitar fretboard SVG, highlighting notes in the provided scale.
- * @param {Set<string>} scaleNotes - A Set containing the names of notes in the current scale (e.g., {"C", "D", "E", ...}).
- * @param {number} startFret - The first fret number to display.
- * @param {number} numFrets - The total number of frets to display.
- */
-function drawFretboard(scaleNotes, startFret = 0, numFrets = NUM_FRETS_TO_SHOW) {
-    const svg = document.getElementById(FRETBOARD_SVG_ID);
-    if (!svg) {
-        console.error(`drawFretboard: Cannot find SVG element with ID ${FRETBOARD_SVG_ID}`);
-        return;
-    }
-    // Clear previous fretboard content
-    svg.innerHTML = '';
-
-    const svgNS = "http://www.w3.org/2000/svg";
-    const viewBox = svg.viewBox.baseVal; // Get viewBox dimensions (e.g., 0 0 600 150)
-    const svgWidth = viewBox.width;
-    const svgHeight = viewBox.height;
-
-    // --- Define Layout Parameters ---
-    const padding = { top: 25, bottom: 25, left: 30, right: 30 }; // Increased padding
-    const fretboardWidth = svgWidth - padding.left - padding.right;
-    const fretboardHeight = svgHeight - padding.top - padding.bottom;
-    const stringSpacing = fretboardHeight / (NUM_STRINGS - 1);
-    const fretSpacing = fretboardWidth / numFrets; // Width per fret space
-
-    // --- Draw Strings ---
-    for (let i = 0; i < NUM_STRINGS; i++) {
-        const y = padding.top + i * stringSpacing;
-        const line = document.createElementNS(svgNS, 'line');
-        line.setAttribute('x1', padding.left);
-        line.setAttribute('y1', y);
-        line.setAttribute('x2', svgWidth - padding.right);
-        line.setAttribute('y2', y);
-        line.setAttribute('class', 'string-line');
-        svg.appendChild(line);
-    }
-
-    // --- Draw Frets ---
-    for (let i = 0; i <= numFrets; i++) {
-        const x = padding.left + i * fretSpacing;
-        const line = document.createElementNS(svgNS, 'line');
-        line.setAttribute('x1', x);
-        line.setAttribute('y1', padding.top);
-        line.setAttribute('x2', x);
-        line.setAttribute('y2', svgHeight - padding.bottom);
-
-        // Special style for the 'nut' (0th fret) if displayed
-        if (startFret === 0 && i === 0) {
-            line.setAttribute('class', 'nut-line');
-        } else {
-            line.setAttribute('class', 'fret-line');
-        }
-        svg.appendChild(line);
-
-        // Add Fret Labels (optional, below the fretboard)
-        const fretNumber = startFret + i;
-        if (fretNumber > 0) { // Don't label the nut as '0' this way
-             const labelX = x; // Center label on the fret line
-             const labelY = svgHeight - padding.bottom / 2; // Position below strings
-             const text = document.createElementNS(svgNS, 'text');
-             text.setAttribute('x', labelX);
-             text.setAttribute('y', labelY);
-             text.setAttribute('class', 'fret-label');
-             // Display only odd numbers or specific frets (3, 5, 7, 9, 12...) for less clutter
-             if (fretNumber % 2 !== 0 || fretNumber === 12 || fretNumber === 24) {
-                 text.textContent = fretNumber;
-                 svg.appendChild(text);
-             }
-        }
-    }
-
-
-    // --- Draw Note Dots ---
-    const noteRadius = Math.min(stringSpacing / 2.5, fretSpacing / 2.5); // Dynamic radius
-
-    for (let stringIndex = 0; stringIndex < NUM_STRINGS; stringIndex++) {
-        const stringY = padding.top + stringIndex * stringSpacing;
-        const baseMidi = STANDARD_TUNING_MIDI[stringIndex];
-
-        // --- Loop through the SPACES between frets ---
-        for (let fretIndex = 0; fretIndex < numFrets; fretIndex++) {
-
-            // --- CORRECTED Calculation START ---
-            // The fret number REPRESENTED BY the note in this space (fretIndex)
-            // is determined by the fret wire AFTER the space.
-            const fretNumberPressed = startFret + fretIndex + 1;
-            const noteMidi = baseMidi + fretNumberPressed;
-            // --- CORRECTED Calculation END ---
-
-            const noteNameOctave = midiToNoteName(noteMidi); // e.g., "C#4"
-
-            if (noteNameOctave) {
-                const noteName = noteNameOctave.replace(/\d/g, ''); // Extract note name ("C#")
-
-                // Check if this note is in the current scale
-                if (scaleNotes.has(noteName)) {
-                    // Calculate position for the dot (centered between frets)
-                    // Position uses fretIndex to place it in the correct space
-                    const dotX = padding.left + (fretIndex + 0.5) * fretSpacing;
-                    const dotY = stringY;
-
-                    const circle = document.createElementNS(svgNS, 'circle');
-                    circle.setAttribute('cx', dotX);
-                    circle.setAttribute('cy', dotY);
-                    circle.setAttribute('r', noteRadius);
-                    circle.setAttribute('class', 'note-dot'); // Always add the base class
-                    if (noteName === currentKeyRoot) {
-                        circle.classList.add('root-note'); // Add root class if it matches
-                    }
-                    svg.appendChild(circle);
-                }
-            }
-        } // End loop through frets (spaces)
-
-        // --- Check Open String Notes (if startFret is 0) ---
-        // This part remains unchanged and correctly handles notes ON the nut line
-        if (startFret === 0) {
-            const openStringMidi = baseMidi; // Fret 0
-            const openNoteNameOctave = midiToNoteName(openStringMidi);
-            if (openNoteNameOctave) {
-                const openNoteName = openNoteNameOctave.replace(/\d/g, '');
-                if (scaleNotes.has(openNoteName)) {
-                    // Position ON the nut line
-                    const dotX = padding.left;
-                    const dotY = stringY;
-
-                    const circle = document.createElementNS(svgNS, 'circle');
-                    circle.setAttribute('cx', dotX);
-                    circle.setAttribute('cy', dotY);
-                    circle.setAttribute('r', noteRadius * 0.8);
-                    circle.setAttribute('class', 'note-dot');
-                    if (openNoteName === currentKeyRoot) {
-                       circle.classList.add('root-note');
-                    }
-                    svg.appendChild(circle);
-                }
-            }
-        } // End check for open strings
-
-    } // End loop through strings
-
-    // --- Update Fretboard Info Text ---
-    const infoElement = document.getElementById(FRETBOARD_INFO_ID);
-    if (infoElement) {
-        infoElement.textContent = `Starting Fret: ${startFret}`;
-    }
-
-    console.log(`Drew fretboard starting at fret ${startFret} for scale:`, scaleNotes);
-}
-
-/**
- * Clears the content of the fretboard SVG.
- */
-function clearFretboard() {
-    const svg = document.getElementById(FRETBOARD_SVG_ID);
-    if (svg) {
-        svg.innerHTML = ''; // Clear previous content
-    }
-     const infoElement = document.getElementById(FRETBOARD_INFO_ID);
-    if (infoElement) {
-        infoElement.textContent = ''; // Clear info text
-    }
-}
 
 // === PITCH DETECTION SETUP ===
 // ... (Keep setupPitchDetection function as it is) ...
@@ -1140,48 +918,13 @@ async function startApp() {
         lessonPhaseDiv.classList.remove('hidden');
         console.log("startApp: Switched to Lesson Phase");
 
-       // Update Lesson Info Display
-       const currentProgressionName = baseProgressionsData[currentKeyQuality]?.[currentProgressionId]?.name || 'Unknown';
-       lessonInfoSpan.textContent = `${currentProgressionName} in ${currentKeyRoot} ${currentKeyQuality} at ${currentTempo} BPM`;
-       console.log("startApp: Updated lesson info span.");
+        // Update Lesson Info Display
+        const currentProgressionName = baseProgressionsData[currentKeyQuality]?.[currentProgressionId]?.name || 'Unknown';
+        lessonInfoSpan.textContent = `${currentProgressionName} in ${currentKeyRoot} ${currentKeyQuality} at ${currentTempo} BPM`;
+        console.log("startApp: Updated lesson info span.");
 
-       // --- Calculate Scale Notes and Draw Fretboard ---
-       // --- Calculate Scale Notes ---
-       const scaleNotes = getScaleNotes(currentKeyRoot, currentKeyQuality);
-
-       // --- Determine Fretboard Display Parameters based on Mode ---
-       let finalStartFret = 0;
-       let finalNumFrets = SLIDING_WINDOW_FRETS; // Default for sliding/random
-
-       switch (fretboardViewMode) {
-           case 'fixed':
-               finalStartFret = 0;
-               finalNumFrets = FIXED_VIEW_FRETS; // Show frets 0-11
-               console.log("Drawing fixed fretboard (0-11)");
-               break;
-           case 'sliding':
-               finalStartFret = userStartFret; // Use the value from the input
-               finalNumFrets = SLIDING_WINDOW_FRETS;
-                console.log(`Drawing sliding fretboard window starting at ${finalStartFret}`);
-               break;
-           case 'random':
-               // Generate a random start fret from 0 up to MAX_START_FRET_RANDOM
-               finalStartFret = Math.floor(Math.random() * (MAX_START_FRET_RANDOM + 1));
-               finalNumFrets = SLIDING_WINDOW_FRETS;
-                console.log(`Drawing random fretboard window starting at ${finalStartFret}`);
-               break;
-           default: // Fallback to sliding if mode is unknown
-               console.warn(`Unknown fretboardViewMode: ${fretboardViewMode}, defaulting to sliding.`);
-               finalStartFret = userStartFret;
-               finalNumFrets = SLIDING_WINDOW_FRETS;
-       }
-
-       // --- Draw Fretboard with Calculated Parameters ---
-       drawFretboard(scaleNotes, finalStartFret, finalNumFrets);
-       // --- End Fretboard Drawing ---
         // Start Tone Transport & Chord Part
         console.log("startApp: Resetting and starting Transport...");
-
         // Ensure transport is stopped and cleared before restarting
         if (Tone.Transport.state === 'started') { Tone.Transport.stop(); }
         Tone.Transport.cancel(0); // Clear ALL previous events before scheduling new ones
@@ -1350,9 +1093,7 @@ function stopApp() {
       waveformCtx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim();
       waveformCtx.fillRect(0, 0, waveformCanvas.width, waveformCanvas.height);
     }
-    // --- Clear the Fretboard ---
-    clearFretboard();
-    // --- End Clear Fretboard ---
+
     console.log("Application stopped cleanly.");
 }
 
@@ -1475,14 +1216,6 @@ function highlightCircleSegment(keyToHighlight, qualityToHighlight, segmentToHig
 // === Event Listeners (MODIFIED) ===
 startButton.addEventListener('click', startApp);
 stopButton.addEventListener('click', stopApp);
-// --- NEW: Fretboard View Control Listeners ---
-fretViewFixedRadio.addEventListener('change', handleFretViewChange);
-fretViewSlidingRadio.addEventListener('change', handleFretViewChange);
-fretViewRandomRadio.addEventListener('change', handleFretViewChange);
-startFretInput.addEventListener('input', handleStartFretChange); // 'input' fires immediately
-// Use 'change' if you only want it to fire after losing focus:
-// startFretInput.addEventListener('change', handleStartFretChange);
-// --- End Fretboard Listeners ---
 
 // Tempo Slider Listener (MODIFIED - NO LONGER updates metronome frequency directly)
 tempoSlider.addEventListener('input', (event) => {
@@ -1596,23 +1329,6 @@ function initializeApp() {
     pitchOutputDiv.innerHTML = 'Select Key & Progression, then Start';
     pitchOutputDiv.className = 'pitch-output'; // Ensure base class is set initially
 
-    // --- Clear Fretboard on Init ---
-    clearFretboard();
-    // --- End Clear Fretboard ---
-    // --- Initialize Fretboard View Controls ---
-    fretViewFixedRadio.checked = (fretboardViewMode === 'fixed');
-    fretViewSlidingRadio.checked = (fretboardViewMode === 'sliding');
-    fretViewRandomRadio.checked = (fretboardViewMode === 'random');
-    startFretInput.value = userStartFret;
-
-    if (fretboardViewMode === 'sliding') {
-        slidingStartFretControlDiv.classList.remove('hidden');
-        startFretInput.disabled = false;
-    } else {
-        slidingStartFretControlDiv.classList.add('hidden');
-        startFretInput.disabled = true;
-    }
-    // --- End Fretboard View Init ---
     console.log("App Initialized. Default Key Root:", currentKeyRoot, "Default Quality:", currentKeyQuality, "Default Prog:", currentProgressionId);
 }
 

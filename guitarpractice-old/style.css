@@ -1,0 +1,248 @@
+/* style.css */
+:root {
+    --bg-color: #282c34;
+    --text-color: #abb2bf;
+    --primary-color: #61afef; /* Blueish */
+    --secondary-color: #c678dd; /* Purplish */
+    --accent-color: #98c379; /* Greenish */
+    --border-color: #4b5263;
+    --input-bg: #3a3f4b;
+    --button-bg: var(--primary-color);
+    --button-text: #ffffff;
+    --button-hover-bg: #7ac0ff;
+    --disabled-opacity: 0.5;
+}
+
+body {
+    font-family: sans-serif;
+    padding: 20px; /* Keep some padding around the edges */
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+
+    /* --- Add Flexbox for Centering --- */
+    display: flex;              /* Make body a flex container */
+    flex-direction: column;     /* Stack children vertically (h1, phase divs) */
+    align-items: center;        /* Center children horizontally */
+    min-height: calc(100vh - 40px); /* Ensure body takes at least viewport height minus padding */
+    /* --- End Flexbox --- */
+}
+
+h1, h2 {
+    color: var(--primary-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    width: 90%;         /* Make headings consistent width with phases */
+    max-width: 800px;   /* Apply same max-width */
+    text-align: center; /* Center the text within the heading block */
+}
+
+button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    cursor: pointer;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+    background-color: var(--button-hover-bg);
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: var(--disabled-opacity);
+}
+
+select, input[type="range"] {
+    padding: 8px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    vertical-align: middle; /* Align better with labels */
+}
+
+input[type="range"] {
+    cursor: pointer;
+    width: 200px;
+}
+
+/* Add some styles for the slider thumb */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+
+.control-group {
+    margin-top: 15px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.05); /* Slightly lighter background for grouping */
+    border-radius: 4px;
+}
+
+.control-group label {
+    margin-right: 10px;
+    display: inline-block;
+    min-width: 90px; /* Adjust as needed */
+    font-weight: bold;
+}
+
+#tempoValue {
+    font-weight: bold;
+    margin-left: 10px;
+    min-width: 40px;
+    display: inline-block;
+    text-align: right;
+    color: var(--accent-color);
+}
+
+.hidden {
+    display: none;
+}
+
+/* --- Phase Specific Styles --- */
+#selectionPhase, #lessonPhase {
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background-color: #313640;
+
+    /* --- Add Width Control and Automatic Margins --- */
+    width: 90%;         /* Take up 90% of the available width */
+    max-width: 800px;   /* But don't exceed 800px (adjust as desired) */
+    box-sizing: border-box; /* Include padding in width calculation */
+    /* --- End Width Control --- */
+}
+
+/* --- Circle of Fifths Styles --- */
+/* Container for the circle, ensure it centers the SVG */
+#circleContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    min-height: 310px; /* Ensure space */
+}
+
+/* Style for both segment types */
+#circleOfFifths .key-segment-major,
+#circleOfFifths .key-segment-minor {
+    cursor: pointer;
+    fill: var(--input-bg);
+    stroke: var(--border-color);
+    stroke-width: 0.5;
+    transition: fill 0.2s ease;
+}
+
+#circleOfFifths .key-segment-major:hover,
+#circleOfFifths .key-segment-minor:hover {
+    fill: var(--secondary-color);
+    opacity: 0.8;
+}
+
+/* Style for selected segments */
+#circleOfFifths .key-segment-major.selected,
+#circleOfFifths .key-segment-minor.selected {
+    fill: var(--primary-color);
+    stroke: var(--accent-color);
+    stroke-width: 1;
+}
+
+/* Keep existing label style */
+#circleOfFifths .key-label {
+    fill: var(--text-color);
+    font-size: 5px; /* Slightly smaller maybe */
+    text-anchor: middle;
+    dominant-baseline: middle;
+    pointer-events: none; /* Labels shouldn't block clicks */
+}
+
+
+/* --- Lesson Phase Specific --- */
+#lessonInfo {
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+#waveformContainer {
+    margin: 20px 0;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    display: flex; /* Center canvas if needed */
+    justify-content: center;
+    /* Ensure container respects parent width */
+    width: 100%;
+    box-sizing: border-box;
+}
+/* Make canvas responsive within container */
+#waveformCanvas {
+    max-width: 100%;
+    height: auto; /* Maintain aspect ratio */
+}
+
+#pitchOutput {
+    margin-top: 20px;
+    font-size: 1.3em;
+    min-height: 60px; /* Adjust as needed */
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    background-color: var(--input-bg);
+    border-radius: 4px;
+    text-align: center;
+    transition: background-color 0.1s ease; /* Smooth color transition */
+}
+
+/* Pitch Output Specific Styles (from previous JS example) */
+#pitchOutput .note {
+    font-weight: bold;
+    display: block;
+    color: var(--primary-color);
+    font-size: 1.5em; /* Make note bigger */
+}
+
+#pitchOutput .frequency {
+    font-size: 0.8em;
+    color: var(--text-color);
+    display: block;
+    margin-top: 5px;
+}
+
+#pitchOutput .clarity {
+    font-size: 0.7em;
+    color: var(--secondary-color);
+    display: block;
+}
+
+#pitchOutput .error {
+    color: #ff6b6b; /* Reddish */
+    font-weight: bold;
+}
+
+/* Color feedback styling */
+#pitchOutput.in-tune { background-color: hsla(120, 70%, 30%, 0.5); } /* Greenish */
+#pitchOutput.slightly-off { background-color: hsla(60, 70%, 30%, 0.5); } /* Yellowish */
+#pitchOutput.off { background-color: hsla(0, 70%, 30%, 0.5); } /* Reddish */
