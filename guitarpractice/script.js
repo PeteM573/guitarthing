@@ -65,8 +65,8 @@ const NOTE_TO_MIDI_BASE = { // MIDI numbers for octave 0
 const MIDI_TO_NOTE_SHARP = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const MIDI_TO_NOTE_FLAT = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
-// --- Fretboard Constants ---
-const STANDARD_TUNING_MIDI = [40, 45, 50, 55, 59, 64]; // E2, A2, D3, G3, B3, E4
+// Corrected Order: High E (top) to Low E (bottom)
+const STANDARD_TUNING_MIDI = [64, 59, 55, 50, 45, 40]; // E4, B3, G3, D3, A2, E2
 const NUM_STRINGS = 6;
 // const NUM_FRETS_TO_SHOW = 7; // We'll calculate this dynamically now
 const FIXED_VIEW_FRETS = 12; // For the 0-11 view

@@ -16,6 +16,12 @@
     --disabled-opacity: 0.5;
 }
 
+/* Add box-sizing globally for easier layout */
+* {
+    box-sizing: border-box;
+}
+
+
 body {
     font-family: sans-serif;
     padding: 20px; /* Keep some padding around the edges */
@@ -35,15 +41,24 @@ h1, h2 {
     color: var(--primary-color);
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 5px;
+    margin-top: 15px; /* Added top margin */
     margin-bottom: 15px;
     width: 90%;         /* Make headings consistent width with phases */
     max-width: 800px;   /* Apply same max-width */
     text-align: center; /* Center the text within the heading block */
+    font-size: 2em;     /* Base font size */
 }
+
+h2 {
+     font-size: 1.5em; /* Smaller base for h2 */
+     margin-top: 20px; /* More space above h2 */
+}
+
 
 button {
     padding: 10px 20px;
-    margin-right: 10px;
+    margin-right: 10px; /* Default right margin */
+    margin-bottom: 10px; /* Add bottom margin for stacking */
     cursor: pointer;
     background-color: var(--button-bg);
     color: var(--button-text);
@@ -51,6 +66,7 @@ button {
     border-radius: 4px;
     font-size: 1em;
     transition: background-color 0.2s ease;
+    display: inline-block; /* Default display */
 }
 
 button:hover:not(:disabled) {
@@ -62,18 +78,22 @@ button:disabled {
     opacity: var(--disabled-opacity);
 }
 
-select, input[type="range"] {
+select, input[type="range"], input[type="number"] { /* Added number input */
     padding: 8px;
+    margin-bottom: 10px; /* Add bottom margin for stacking */
     background-color: var(--input-bg);
     color: var(--text-color);
     border: 1px solid var(--border-color);
     border-radius: 4px;
     vertical-align: middle; /* Align better with labels */
+    width: auto; /* Default width */
+    max-width: 100%; /* Prevent overflow */
+    display: inline-block; /* Default display */
 }
 
 input[type="range"] {
     cursor: pointer;
-    width: 200px;
+    width: 200px; /* Default width for range */
 }
 
 /* Add some styles for the slider thumb */
@@ -103,13 +123,16 @@ input[type="range"]::-moz-range-thumb {
     padding: 10px;
     background-color: rgba(255, 255, 255, 0.05); /* Slightly lighter background for grouping */
     border-radius: 4px;
+    /* Removed flexbox here - will apply in media query */
 }
 
 .control-group label {
     margin-right: 10px;
-    display: inline-block;
+    margin-bottom: 5px; /* Add space below labels */
+    display: inline-block; /* Default display */
     min-width: 90px; /* Adjust as needed */
     font-weight: bold;
+    vertical-align: middle; /* Base alignment for inline-block */
 }
 
 #tempoValue {
@@ -119,6 +142,7 @@ input[type="range"]::-moz-range-thumb {
     display: inline-block;
     text-align: right;
     color: var(--accent-color);
+    vertical-align: middle;
 }
 
 .hidden {
@@ -133,10 +157,10 @@ input[type="range"]::-moz-range-thumb {
     margin-bottom: 20px;
     background-color: #313640;
 
-    /* --- Add Width Control and Automatic Margins --- */
+    /* --- Width Control and Automatic Margins --- */
     width: 90%;         /* Take up 90% of the available width */
     max-width: 800px;   /* But don't exceed 800px (adjust as desired) */
-    box-sizing: border-box; /* Include padding in width calculation */
+    /* box-sizing: border-box; applied globally */
     /* --- End Width Control --- */
 }
 
@@ -146,9 +170,22 @@ input[type="range"]::-moz-range-thumb {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 10px; /* Reduced top margin */
     margin-bottom: 20px;
     min-height: 310px; /* Ensure space */
+    width: 100%; /* Take full width of parent */
+    max-width: 350px; /* Limit max size slightly */
+    margin-left: auto;
+    margin-right: auto;
 }
+
+#circleOfFifths {
+    width: 100%; /* Make SVG scale */
+    height: auto; /* Maintain aspect ratio */
+    max-width: 300px; /* Match original size as max */
+    display: block; /* Remove potential bottom space */
+}
+
 
 /* Style for both segment types */
 #circleOfFifths .key-segment-major,
@@ -156,7 +193,7 @@ input[type="range"]::-moz-range-thumb {
     cursor: pointer;
     fill: var(--input-bg);
     stroke: var(--border-color);
-    stroke-width: 0.5;
+    stroke-width: 0.5; /* Kept stroke width */
     transition: fill 0.2s ease;
 }
 
@@ -177,7 +214,7 @@ input[type="range"]::-moz-range-thumb {
 /* Keep existing label style */
 #circleOfFifths .key-label {
     fill: var(--text-color);
-    font-size: 5px; /* Slightly smaller maybe */
+    font-size: 5px; /* Keep size relative to SVG */
     text-anchor: middle;
     dominant-baseline: middle;
     pointer-events: none; /* Labels shouldn't block clicks */
@@ -188,6 +225,9 @@ input[type="range"]::-moz-range-thumb {
 #lessonInfo {
     font-weight: bold;
     color: var(--accent-color);
+    display: block; /* Make it block for better spacing */
+    margin-bottom: 15px; /* Add space below */
+    text-align: center;
 }
 
 /* Update waveform container styles */
@@ -197,8 +237,8 @@ input[type="range"]::-moz-range-thumb {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     width: 100%;
-    box-sizing: border-box;
-    height: 150px;
+    /* box-sizing: border-box; applied globally */
+    height: 100px; /* Reduced height slightly */
 }
 
 /* Ensure canvas background matches */
@@ -217,129 +257,106 @@ input[type="range"]::-moz-range-thumb {
     padding: 15px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
-    min-height: 100px;
-    box-sizing: border-box;
+    min-height: 100px; /* Keep min height */
+    /* box-sizing: border-box; applied globally */
 
     /* Text and Alignment */
-    font-size: 1.2em;
+    font-size: 1.1em; /* Slightly reduced base font size */
     text-align: center;
 
     /* Background and Transitions (NOW FOR KEY STATUS) */
     background-color: var(--input-bg); /* Default background when no note/reset */
     transition: background-color 0.2s ease; /* Smooth background transition */
-    /* Optional: Add opacity transition if using the dimming effect in handleUnclearInput */
-    /* transition: background-color 0.2s ease, opacity 0.3s ease; */
 }
 
-/* === NEW: Background Color based on Key Status === */
+/* Background Color based on Key Status */
 #pitchOutput.key-status-in {
     background-color: #ff5900; /* Warm/Orange = In Key */
 }
-
 #pitchOutput.key-status-out {
     background-color: #666fa4; /* Cool/Blue = Out of Key */
 }
-/* === END NEW === */
-
-
-/* --- REMOVED: Old Intonation Background Rules ---
-#pitchOutput.in-tune { ... }
-#pitchOutput.slightly-off { ... }
-#pitchOutput.off { ... }
-*/
-
 
 /* Child Elements within #pitchOutput */
-
-/* Base Note Name Display */
 #pitchOutput .note {
     display: block;
     font-weight: bold;
-    font-size: 1.8em;
-    color: #ffffff; /* Consistent readable color (White) */
-    /* Alternative: color: var(--text-color); */
-    margin-bottom: 8px;
+    font-size: 1.6em; /* Reduced size */
+    color: #ffffff;
+    margin-bottom: 6px; /* Reduced margin */
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    /* No transition needed here anymore */
 }
 
-/* --- REMOVED: Old Key Status Note Color Rules ---
-#pitchOutput .note.in-key-note { ... }
-#pitchOutput .note.out-of-key-note { ... }
-*/
-
-
-/* Frequency and Cents Display */
 #pitchOutput .frequency {
     display: block;
     font-size: 0.8em;
-    /* Ensure text is readable on both blue/red backgrounds */
-    color: #dadada; /* Light gray often works well */
+    color: #dadada;
     opacity: 0.9;
-    margin-bottom: 5px;
+    margin-bottom: 4px; /* Reduced margin */
 }
 
-/* Clarity Display */
 #pitchOutput .clarity {
     display: block;
     font-size: 0.7em;
-    /* Ensure text is readable */
-    color: #c0c0c0; /* Lighter gray */
+    color: #c0c0c0;
     opacity: 0.9;
     font-style: italic;
 }
 
-/* Error Message Style (Ensure readable on default background) */
 #pitchOutput .error {
     display: block;
-    color: #ff8080; /* Light red for errors */
-    background-color: var(--input-bg); /* Ensure default bg for error msg */
-    padding: 10px; /* Add padding to error for visibility */
+    color: #ff8080;
+    background-color: var(--input-bg);
+    padding: 10px;
     font-weight: bold;
-    font-size: 1.0em;
+    font-size: 0.9em; /* Reduced size */
 }
 
 /* --- End Pitch Output Area Styles --- */
 
 /* --- Legend Styles --- */
 #legendContainer {
-    margin-top: 10px; /* Add some space above the legend */
-    margin-bottom: 20px; /* Space below the legend */
+    margin-top: 15px; /* Adjusted margin */
+    margin-bottom: 20px;
     padding: 8px;
-    background-color: rgba(0, 0, 0, 0.1); /* Subtle background */
+    background-color: rgba(0, 0, 0, 0.1);
     border-radius: 4px;
-    text-align: center; /* Center the legend items */
+    text-align: center;
     border: 1px solid var(--border-color);
+    /* Allow wrapping */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px 20px; /* Row and column gap */
 }
 
 .legend-item {
-    display: inline-flex; /* Use flex for better alignment */
-    align-items: center;  /* Vertically align swatch and label */
-    margin: 0 15px; /* Space between legend items */
+    display: inline-flex;
+    align-items: center;
+    /* Removed margin, using gap now */
 }
 
 .legend-color {
     display: inline-block;
-    width: 20px;
-    height: 20px;
+    width: 18px; /* Slightly smaller */
+    height: 18px;
     border: 1px solid var(--border-color);
-    margin-right: 8px; /* Space between swatch and label */
-    border-radius: 3px; /* Slightly rounded corners */
+    margin-right: 6px; /* Reduced space */
+    border-radius: 3px;
+    flex-shrink: 0; /* Prevent color swatch from shrinking */
 }
 
-/* Use the EXACT colors defined for the pitch output backgrounds */
 .legend-color-in {
-    /* This color corresponds to #pitchOutput.key-status-in */
-    background-color: #ff5900; /* Direct color from your CSS */
+    background-color: #ff5900;
 }
 
 .legend-color-out {
-    /* This color corresponds to #pitchOutput.key-status-out */
-    background-color: #666fa4; /* Direct color from your CSS */
+    background-color: #666fa4;
 }
 
 .legend-label {
-    font-size: 0.9em;
+    font-size: 0.85em; /* Slightly reduced size */
     color: var(--text-color);
 }
 
@@ -348,34 +365,34 @@ input[type="range"]::-moz-range-thumb {
 /* --- Metronome Styles --- */
 #metronomeToggle {
     /* Inherits base button styles */
-    /* Add specific adjustments if needed */
-    background-color: var(--secondary-color); /* Give it a different color */
-    min-width: 140px; /* Ensure enough width for text ON/OFF */
+    background-color: var(--secondary-color);
+    min-width: 140px;
+    margin-left: 0; /* Remove specific margin for stacking */
 }
 
 #metronomeToggle:hover:not(:disabled) {
-    opacity: 0.9; /* Slight fade instead of color change */
+    opacity: 0.9;
 }
 
 /* --- Fretboard Styles --- */
 #fretboardContainer {
     margin: 20px 0;
-    background-color: #3a3f4b; /* Similar to input background */
+    background-color: #3a3f4b;
     border: 1px solid var(--border-color);
     border-radius: 4px;
-    padding: 15px;
-    box-sizing: border-box;
+    padding: 10px; /* Reduced padding */
+    /* box-sizing: border-box; applied globally */
     width: 100%; /* Take full width of parent */
-    max-width: 650px; /* Optional: Limit max width */
-    margin-left: auto;  /* Center the container if max-width is active */
-    margin-right: auto; /* Center the container if max-width is active */
+    max-width: 650px; /* Keep max width */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #fretboardSVG {
-    display: block; /* Remove extra space below SVG */
+    display: block;
     width: 100%;    /* Make SVG responsive */
     height: auto;   /* Maintain aspect ratio defined by viewBox */
-    background-color: #5c5757; /* Wood-like color */
+    background-color: #5c5757;
     border-radius: 3px;
 }
 
@@ -384,88 +401,95 @@ input[type="range"]::-moz-range-thumb {
     font-size: 0.8em;
     color: var(--text-color);
     margin-top: 5px;
-    padding-right: 10px;
+    padding-right: 5px; /* Reduced padding */
 }
 
-/* SVG Element Styles (will be set by JS) */
+/* SVG Element Styles (mostly unchanged, rely on viewBox scaling) */
 .string-line {
-    stroke: #cccccc; /* Light grey for strings */
-    stroke-width: 2;
+    stroke: #cccccc;
+    stroke-width: 2; /* Keep stroke width relative to viewBox */
 }
 
 .fret-line {
-    stroke: #888888; /* Darker grey for frets */
+    stroke: #888888;
     stroke-width: 1.5;
 }
 
-.nut-line { /* For the 0 fret */
-    stroke: #ededed; /* Almost white nut */
+.nut-line {
+    stroke: #ededed;
     stroke-width: 4;
 }
 
 .note-dot {
-    fill: var(--primary-color); /* Use theme color for notes in scale */
+    fill: var(--primary-color);
     stroke: #1a1c20;
     stroke-width: 0.5;
     opacity: 0.9;
-    /* transition: fill 0.1s ease; Optional */
 }
 
 .note-dot.root-note {
-    fill: #ff5900; /* Orange color, same as 'in-key' background */
-    /* Optional: Slightly different stroke or size for more emphasis */
-    /* stroke: #ffffff; */
-    /* stroke-width: 1; */
+    fill: #ff5900;
 }
 
 .fret-label {
     fill: var(--text-color);
-    font-size: 10px;
+    font-size: 10px; /* Keep font size relative to viewBox */
     text-anchor: middle;
     dominant-baseline: middle;
 }
 /* --- End Fretboard Styles --- */
 
 /* --- Fretboard Control Styles --- */
-.fretboard-controls label {
-    /* Adjust if needed, but should inherit from .control-group label */
-    display: block; /* Make the main label block */
+/* REMOVED the empty .fretboard-controls rule */
+
+.fretboard-controls label { /* Style the main label within this specific group */
+    display: block; /* Make the main label block for stacking */
     margin-bottom: 8px;
+    width: 100%; /* Ensure label takes full width */
 }
 
 .fretboard-controls .radio-group {
-    display: inline-block; /* Keep radio buttons somewhat inline */
+    display: block; /* Make radio group block level */
     margin-bottom: 10px;
+    width: 100%;
 }
 
 .fretboard-controls .radio-group input[type="radio"] {
     margin-right: 5px;
-    vertical-align: middle;
+    vertical-align: middle; /* This works for the radio button itself */
 }
 
 .fretboard-controls .radio-group label {
-    display: inline-block; /* Make radio labels inline */
+    display: inline-block; /* Keep labels next to radios */
     margin-right: 15px;
-    margin-bottom: 0; /* Reset bottom margin */
-    font-weight: normal; /* Unbold radio labels */
-     cursor: pointer;
+    margin-bottom: 5px; /* Add spacing below radio options */
+    font-weight: normal;
+    cursor: pointer;
+    width: auto; /* Let label width be natural */
+    vertical-align: middle; /* This works for the inline-block label */
 }
 
 .fretboard-controls .sub-control {
-    margin-left: 10px; /* Indent the start fret input slightly */
-    display: inline-block; /* Allow it to sit next to radios if space allows */
-    vertical-align: middle;
+    margin-left: 0; /* Remove indent */
+    display: block; /* Make sub-control block level */
+    /* vertical-align: middle; /* No effect on block */
+    width: 100%;
 }
 
 .fretboard-controls .sub-control label {
-     display: inline-block; /* Make label inline */
+     display: inline-block; /* Allow label next to input */
      margin-right: 5px;
+     margin-bottom: 5px; /* Consistent bottom margin */
      font-weight: normal;
+     width: auto; /* Natural width */
+     vertical-align: middle; /* Works for inline-block label */
 }
 
 .fretboard-controls input[type="number"] {
-    width: 60px; /* Smaller width for number input */
+    width: 70px; /* Keep number input reasonably small */
     padding: 5px 8px;
+    display: inline-block; /* Allow next to label */
+    vertical-align: middle; /* Works for inline-block input */
     /* Inherits other input styles */
 }
 
@@ -474,3 +498,199 @@ input[type="range"]::-moz-range-thumb {
     display: none;
 }
 /* --- End Fretboard Control Styles --- */
+
+
+/* --- Mobile Responsive Styles --- */
+
+/* Tablet and smaller */
+@media (max-width: 768px) {
+    body {
+        padding: 10px; /* Reduce body padding */
+    }
+
+    h1 {
+        font-size: 1.8em; /* Reduce heading size */
+    }
+    h2 {
+        font-size: 1.3em; /* Reduce subheading size */
+    }
+
+    #selectionPhase, #lessonPhase {
+        padding: 15px; /* Reduce phase padding */
+        width: 95%; /* Slightly wider */
+    }
+
+    button {
+        padding: 12px 15px; /* Adjust button padding for tapping */
+    }
+
+    input[type="range"] {
+        width: 100%; /* Make slider take more width */
+    }
+
+    #circleContainer {
+         max-width: 300px; /* Allow circle to be slightly smaller */
+         min-height: 260px; /* Reduce min-height */
+    }
+
+    #waveformContainer {
+        height: 80px; /* Further reduce waveform height */
+    }
+
+    #fretboardContainer {
+        padding: 8px; /* Reduce fretboard padding */
+    }
+
+     #pitchOutput {
+        padding: 12px;
+        min-height: 90px;
+    }
+    #pitchOutput .note {
+        font-size: 1.5em;
+    }
+}
+
+
+/* Mobile phone */
+@media (max-width: 480px) {
+    body {
+        padding: 5px; /* Minimal padding */
+        line-height: 1.5; /* Slightly tighter line height */
+    }
+
+    h1 {
+        font-size: 1.5em; /* Further reduce heading */
+    }
+     h2 {
+        font-size: 1.2em; /* Further reduce subheading */
+        margin-top: 15px;
+        margin-bottom: 10px;
+     }
+
+
+    #selectionPhase, #lessonPhase {
+        padding: 10px; /* Minimal phase padding */
+        width: 100%; /* Full width */
+        border-left: none; /* Remove side borders */
+        border-right: none;
+        border-radius: 0; /* Remove border-radius */
+    }
+
+    /* --- Force Vertical Stacking for Controls --- */
+    .control-group {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch; /* Make children take full width */
+        padding: 8px;
+    }
+
+    /* Apply to ALL labels within control groups on mobile */
+    .control-group label {
+        min-width: auto; /* Remove min-width */
+        margin-right: 0;
+        margin-bottom: 5px; /* Space below label */
+        display: block; /* Ensure label is block */
+        width: 100%; /* Label takes full width */
+        text-align: left; /* Align label text left */
+        /* No vertical-align needed here as it's block */
+    }
+
+    /* Make most inputs/buttons full width */
+    .control-group select,
+    .control-group input[type="range"],
+    .control-group button,
+    .fretboard-controls input[type="number"] { /* Include number input here */
+         width: 100%;
+         margin-right: 0;
+         margin-left: 0; /* Ensure no side margins */
+         margin-bottom: 12px; /* Consistent spacing */
+    }
+    /* Keep number input width slightly smaller if desired */
+     .fretboard-controls .sub-control input[type="number"] {
+          width: 80px;
+          display: inline-block; /* Allow next to label if space */
+          vertical-align: middle; /* Align input with label */
+     }
+     /* Adjust sub-control label for inline display */
+     .fretboard-controls .sub-control label {
+          display: inline-block; /* Allow next to input if space */
+          width: auto; /* Natural width */
+          margin-bottom: 5px; /* Ensure consistent bottom margin */
+          vertical-align: middle; /* Align label with input */
+     }
+
+
+    /* Specific adjustments for Tempo control */
+    .tempo-control {
+        align-items: center; /* Center slider elements IF they don't stretch */
+    }
+    #tempoValue {
+        display: block; /* Make value block */
+        text-align: center; /* Center value */
+        margin-left: 0;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+    }
+    #metronomeToggle {
+        margin-top: 5px; /* Space above metronome button */
+    }
+
+    /* Fretboard radio buttons */
+    .fretboard-controls .radio-group label {
+        display: block; /* Stack radio labels */
+        margin-bottom: 8px;
+        margin-right: 0;
+        /* No vertical-align needed here as it's block */
+    }
+    .fretboard-controls .radio-group input[type="radio"] {
+         margin-bottom: 8px; /* Add margin below radio button itself */
+         vertical-align: middle; /* Align radio button nicely if label wraps */
+    }
+
+
+    /* Circle */
+     #circleContainer {
+         max-width: 280px;
+         min-height: 240px;
+         margin-bottom: 15px;
+    }
+
+    /* Legend */
+    #legendContainer {
+        padding: 5px;
+        gap: 5px 10px; /* Reduce gap */
+        justify-content: flex-start; /* Align items left */
+    }
+    .legend-label {
+        font-size: 0.8em;
+    }
+
+    /* Pitch Output */
+    #pitchOutput {
+        padding: 8px;
+        min-height: 80px;
+        font-size: 1em; /* Reduce base font size */
+    }
+    #pitchOutput .note {
+        font-size: 1.4em; /* Further reduce note size */
+        margin-bottom: 4px;
+    }
+    #pitchOutput .frequency {
+        font-size: 0.75em;
+        margin-bottom: 3px;
+    }
+     #pitchOutput .clarity {
+        font-size: 0.65em;
+    }
+
+    /* Fretboard */
+    #fretboardContainer {
+        padding: 5px;
+        margin-top: 15px; /* Adjust margins */
+        margin-bottom: 15px;
+    }
+    #fretboardInfo {
+        font-size: 0.7em;
+    }
+
+} /* End of @media (max-width: 480px) */
